@@ -32,37 +32,43 @@ app.post("/api/login", async (req, res) => {
 		password: req.body.password,
 	})
 	if (user) {
-        const token = jwt.sign({
-            email: user.email,
-            name: user.name
-        },'secret12345')
+		const token = jwt.sign(
+			{
+				email: user.email,
+				name: user.name,
+			},
+			"secret12345"
+		)
 		return res.json({ status: "ok", user: token })
-	} else{
-      return res.status(401).json({ status: "error", user: false })  
-    } 
-})
-
-app.get("/api/quote", async (req,res)=>{
-	const token = req.headers['x-access-token']
-	try{
-		const decoded = jwt.verify(token,'secret12345')
-		const user = await userModel.findOne({email:decoded.email})
-		return res.json({status:'ok', quote: user.quote})
-	}catch(err){
-		console.log(err.message)
-		res.status(400).json({status:'error', error:'invalid token'})
+	} else {
+		return res.status(401).json({ status: "error", user: false })
 	}
 })
 
-app.post("/api/quote", async (req,res)=>{
-	const token = req.headers['x-access-token']
-	try{
-		const decoded = jwt.verify(token,'secret12345')
-		await userModel.updateOne({email:decoded.email},{$set:{quote:req.body.quote}})
-		return res.json({status:'ok', quote: req.body.quote})
-	}catch(err){
+app.get("/api/quote", async (req, res) => {
+	const token = req.headers["x-access-token"]
+	try {
+		const decoded = jwt.verify(token, "secret12345")
+		const user = await userModel.findOne({ email: decoded.email })
+		return res.json({ status: "ok", quote: user.quote })
+	} catch (err) {
 		console.log(err.message)
-		res.status(400).json({status:'error', error:'invalid token'})
+		res.status(400).json({ status: "error", error: "invalid token" })
+	}
+})
+
+app.post("/api/quote", async (req, res) => {
+	const token = req.headers["x-access-token"]
+	try {
+		const decoded = jwt.verify(token, "secret12345")
+		await userModel.updateOne(
+			{ email: decoded.email },
+			{ $set: { quote: req.body.quote } }
+		)
+		return res.json({ status: "ok", quote: req.body.quote })
+	} catch (err) {
+		console.log(err.message)
+		res.status(400).json({ status: "error", error: "invalid token" })
 	}
 })
 
